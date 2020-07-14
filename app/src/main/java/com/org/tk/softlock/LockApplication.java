@@ -1,15 +1,18 @@
 package com.org.tk.softlock;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.org.tk.softlock.service.TaskMonitorService;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -77,4 +80,20 @@ public class LockApplication extends Application {
         }
         return true;
     }
+
+    public static boolean isServiceRunning(Context context, String serviceName) {
+        if (TextUtils.isEmpty(serviceName))
+            return false;
+        ActivityManager myManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ArrayList<ActivityManager.RunningServiceInfo> runningService =
+                (ArrayList<ActivityManager.RunningServiceInfo>) myManager.getRunningServices(100);
+        for (int i = 0; i < runningService.size(); i++) {
+            Log.d("serviceName==",runningService.get(i).service.getClassName().toString());
+            if (runningService.get(i).service.getClassName().toString().equals(serviceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

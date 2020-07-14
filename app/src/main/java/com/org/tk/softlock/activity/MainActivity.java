@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -25,6 +28,7 @@ import com.org.tk.softlock.R;
 import com.org.tk.softlock.adapter.AddSoftAdapter;
 import com.org.tk.softlock.databinding.ActivityMainBinding;
 import com.org.tk.softlock.event.CheckSoftChange;
+import com.org.tk.softlock.service.TaskMonitorService;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,12 +48,14 @@ public class MainActivity extends AppCompatActivity {
     private AddSoftAdapter softAdapter;
     private List<ApplicationInfo> packageInfoList = new ArrayList<>();
     private List<String> softName = new ArrayList<>();
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mainBinding.getRoot());
+        context = MainActivity.this;
         EventBus.getDefault().register(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermission();
@@ -162,6 +168,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        Intent intent = new Intent(context, TaskMonitorService.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent restartIntent =
+                PendingIntent.getActivity(context, 0, intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restartIntent); // 1秒钟后重启应用
     }
 
     @Override
