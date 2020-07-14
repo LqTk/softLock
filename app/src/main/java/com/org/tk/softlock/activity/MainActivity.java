@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 PendingIntent.getActivity(context, 0, intent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restartIntent); // 1秒钟后重启应用
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 500, restartIntent); // 0.5秒钟后重启应用
     }
 
     @Override
