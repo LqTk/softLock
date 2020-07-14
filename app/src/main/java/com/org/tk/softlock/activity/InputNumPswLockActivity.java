@@ -4,14 +4,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.org.tk.softlock.LockApplication;
 import com.org.tk.softlock.databinding.ActivityInputNumPswLockBinding;
+import com.org.tk.softlock.gesture.GestureLockViewGroup;
+
+import static com.org.tk.softlock.LockApplication.stringToint;
 
 public class InputNumPswLockActivity extends AppCompatActivity {
 
@@ -19,6 +25,9 @@ public class InputNumPswLockActivity extends AppCompatActivity {
     private ActivityInputNumPswLockBinding lockBinding;
     private String packageName="";
     private PackageManager packageManager;
+    private int[] password;
+    private String passwordStr="";
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +38,49 @@ public class InputNumPswLockActivity extends AppCompatActivity {
 
         packageName = getIntent().getStringExtra("packageName");
         packageManager = context.getPackageManager();
+        preferences = getSharedPreferences(LockApplication.softPre,MODE_PRIVATE);
+        passwordStr = preferences.getString(LockApplication.softpassword, "");
 
         initData();
     }
 
     private void initData() {
+        password = stringToint(passwordStr);
         lockBinding.tvSoftName.setText(getApplicationLabel(context,packageName));
-        lockBinding.tvUnlock.setOnClickListener(new View.OnClickListener() {
+        lockBinding.lockView.setmAnswer(password);
+        lockBinding.lockView.setmTryTimes(5);
+        lockBinding.lockView.setOnGestureLockViewListener(new GestureLockViewGroup.OnGestureLockViewListener() {
+            @Override
+            public void onBlockSelected(int cId) {
+            }
+
+            @Override
+            public void onGestureEvent(boolean matched, int[] password) {
+                if (matched){
+                    LockApplication.isStopLock = true;
+                    if (!TextUtils.isEmpty(packageName)) {
+                        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+                        startActivity(intent);
+                    }
+                    InputNumPswLockActivity.this.finish();
+                }
+            }
+
+            @Override
+            public void onUnmatchedExceedBoundary() {
+                long lastTime = preferences.getLong(LockApplication.lastTime,System.currentTimeMillis());
+                if (System.currentTimeMillis()-lastTime>LockApplication.lockTime){
+                    preferences.edit().putBoolean(LockApplication.lastError,false);
+                    preferences.edit().putLong(LockApplication.lastTime,System.currentTimeMillis());
+                }
+                Toast.makeText(InputNumPswLockActivity.this,"输入次数过多，请"+LockApplication.timeToString(LockApplication.lockTime-(System.currentTimeMillis()-lastTime))+"后再试",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        lockBinding.tvForgetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LockApplication.isStopLock = true;
-                if (!TextUtils.isEmpty(packageName)) {
-                    Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-                    startActivity(intent);
-                }
-                InputNumPswLockActivity.this.finish();
+                startActivity(new Intent(InputNumPswLockActivity.this,ClearPassWordActivity.class).putExtra("from","input"));
             }
         });
     }
@@ -75,4 +112,5 @@ public class InputNumPswLockActivity extends AppCompatActivity {
         super.onStop();
         finish();
     }
+
 }

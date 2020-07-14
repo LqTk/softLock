@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activity.InstallSoftActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_30">
+        android:layout_height="@dimen/dp_40">
         <TextView
             style="@style/topText"
             tools:viewBindingIgnore="true"
@@ -22,17 +23,20 @@
             android:background="@color/gray"
             tools:viewBindingIgnore="true" />
     </RelativeLayout>
-    <androidx.recyclerview.widget.RecyclerView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_30"
-        android:layout_above="@+id/bt_commit"
-        android:id="@+id/recycler_all_soft"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="确定"
-        android:id="@+id/bt_commit"
-        android:enabled="false"/>
-</RelativeLayout>
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bt_commit"
+            android:id="@+id/recycler_all_soft"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="确定"
+            android:id="@+id/bt_commit"
+            android:enabled="false"/>
+    </RelativeLayout>
+</LinearLayout>

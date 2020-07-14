@@ -1,5 +1,6 @@
 package com.org.tk.softlock.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,9 +12,14 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemChildClickListener;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
+import com.org.tk.softlock.CrashHandler;
 import com.org.tk.softlock.LockApplication;
 import com.org.tk.softlock.R;
 import com.org.tk.softlock.adapter.AddSoftAdapter;
@@ -36,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private String hasSoftName;
     private AddSoftAdapter softAdapter;
-    private List<ApplicationInfo> packageInfoList;
+    private List<ApplicationInfo> packageInfoList = new ArrayList<>();
+    private List<String> softName = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,21 +57,70 @@ public class MainActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences(LockApplication.softPre,MODE_PRIVATE);
         hasSoftName = preferences.getString(LockApplication.softname, "");
-        packageInfoList = new ArrayList<>();
         initView();
         ClickListener();
         refreshData(new CheckSoftChange());
+        Thread.setDefaultUncaughtExceptionHandler(CrashHandler.getAppExceptionHandler(MainActivity.this));
     }
 
     private void initView() {
+        showWaring();
+        if (!LockApplication.getPermission(MainActivity.this)){
+            Intent intent = new Intent( Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mainBinding.recyclerSoft.setLayoutManager(layoutManager);
         softAdapter = new AddSoftAdapter(R.layout.soft_item_add,packageInfoList);
         mainBinding.recyclerSoft.setAdapter(softAdapter);
+
+        softAdapter.addChildClickViewIds(R.id.tv_delete);
+        softAdapter.setOnItemChildClickListener(new OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(@NonNull BaseQuickAdapter adapter, @NonNull View view, int position) {
+                switch (view.getId()){
+                    case R.id.tv_delete:
+                        ApplicationInfo item = (ApplicationInfo) adapter.getItem(position);
+                        if (softName.contains(item.packageName)){
+                            softName.remove(item.packageName);
+                            preferences.edit().putString(LockApplication.softname,softName.toString().substring(1,softName.toString().length()-1)).apply();
+                            packageInfoList.remove(item);
+                            softAdapter.notifyDataSetChanged();
+                        }
+                        if (packageInfoList!=null && packageInfoList.size()==0){
+                            mainBinding.rlNosoft.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                }
+            }
+        });
+    }
+
+    private void showWaring() {
+        String passwordStr = preferences.getString(LockApplication.softpassword, "");
+        if (TextUtils.isEmpty(passwordStr)){
+            mainBinding.tvWaring.setVisibility(View.VISIBLE);
+        }else {
+            mainBinding.tvWaring.setVisibility(View.GONE);
+        }
     }
 
     private void ClickListener() {
         mainBinding.ivAddSoft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, InstallSoftActivity.class));
+            }
+        });
+        mainBinding.tvSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,SetSoftPassWordActivity.class);
+                startActivity(intent);
+            }
+        });
+        mainBinding.llAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, InstallSoftActivity.class));
@@ -76,11 +132,11 @@ public class MainActivity extends AppCompatActivity {
     public void refreshData(CheckSoftChange softChange){
         hasSoftName = preferences.getString(LockApplication.softname, "");
         packageInfoList.clear();
-        List<String> name = new ArrayList<>();
+        softName.clear();
         String[] hasName = hasSoftName.split(",");
         for (int i=0;i<hasName.length;i++){
             if (!TextUtils.isEmpty(hasName[i])) {
-                name.add(hasName[i].replaceAll(" ",""));
+                softName.add(hasName[i].replaceAll(" ",""));
             }
         }
         PackageManager pm = this.getPackageManager();
@@ -90,9 +146,14 @@ public class MainActivity extends AppCompatActivity {
         // 第三方应用程序
         for (ApplicationInfo app : listAppcations) {
             //非系统程序
-            if (name.contains(app.packageName)) {
+            if (softName.contains(app.packageName)) {
                 packageInfoList.add(app);
             }
+        }
+        if (packageInfoList!=null && packageInfoList.size()==0){
+            mainBinding.rlNosoft.setVisibility(View.VISIBLE);
+        }else {
+            mainBinding.rlNosoft.setVisibility(View.GONE);
         }
         softAdapter.notifyDataSetChanged();
     }
@@ -107,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         refreshData(new CheckSoftChange());
+        showWaring();
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestPermission() {

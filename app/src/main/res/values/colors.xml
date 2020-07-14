@@ -6,4 +6,12 @@
     <color name="gray">#999999</color>
     <color name="gray1">#bbbbbb</color>
     <color name="soft_name">#1BEDEB</color>
+    <color name="right_name">#159F15</color>
+    <color name="text_waring">#F87070</color>
+    <color name="text_red">#E62D2D</color>
+    <color name="text_top_cancel">#1F94F1</color>
+    <color name="text_normal">#333333</color>
+    <color name="finger_normal">#52E458</color>
+    <color name="bg_white">#f2f2f2</color>
+    <color name="white">#ffffff</color>
 </resources>

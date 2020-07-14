@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_30">
+        android:layout_height="@dimen/dp_40">
+        <TextView
+            android:id="@+id/tv_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="设置"
+            android:textColor="@color/text_normal"
+            android:layout_marginLeft="@dimen/dp_10"/>
         <TextView
             style="@style/topText"
             tools:viewBindingIgnore="true"
@@ -21,7 +30,8 @@
             android:layout_height="@dimen/dp_30"
             android:src="@drawable/ic_add"
             android:layout_alignParentRight="true"
-            android:padding="@dimen/dp_3"/>
+            android:padding="@dimen/dp_3"
+            android:layout_centerVertical="true"/>
         <View
             tools:viewBindingIgnore="true"
             android:layout_width="match_parent"
@@ -29,10 +39,49 @@
             android:background="@color/gray"
             android:layout_alignParentBottom="true"/>
     </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/tv_waring">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="提示：您还未设置密码，点击左上角设置密码。"
+            android:textColor="@color/text_waring"
+            android:padding="@dimen/dp_5"/>
+        <View
+            tools:viewBindingIgnore="true"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_alignParentBottom="true"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/rl_nosoft"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/ll_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal">
+            <ImageView
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="@dimen/dp_80"
+                android:src="@drawable/ic_add"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="点击添加软件"/>
+        </LinearLayout>
+    </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/recycler_soft"/>
 
-</RelativeLayout>
+</LinearLayout>

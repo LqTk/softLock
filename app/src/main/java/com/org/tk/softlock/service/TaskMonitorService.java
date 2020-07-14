@@ -54,13 +54,7 @@ public class TaskMonitorService extends Service {
                     }
                     String packageName="";
                     if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-                        if (!getPermission()){
-                            Intent intent = new Intent( Settings.ACTION_USAGE_ACCESS_SETTINGS);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                        }else {
-                            packageName = getRunningApp();
-                        }
+                        packageName = getRunningApp();
                     }else {
                         ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
                         List<ActivityManager.RunningTaskInfo> taskInfos = am.getRunningTasks(1);
@@ -73,7 +67,8 @@ public class TaskMonitorService extends Service {
                     if (isStart && !TextUtils.isEmpty(packageName) && !startPackageName.equals(packageName) && !packageName.equals("com.org.tk.softlock")){
                         isStart = false;
                     }
-                    if (name.contains(packageName) && !isStart){
+                    String passwordStr = preferences.getString(LockApplication.softpassword, "");
+                    if (name.contains(packageName) && !isStart && !TextUtils.isEmpty(passwordStr)){
                         if (!LockApplication.isStopLock){
                             Intent intent = new Intent(getBaseContext(), InputNumPswLockActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -112,14 +107,4 @@ public class TaskMonitorService extends Service {
         return recentStats.getPackageName();
     }
 
-    private boolean getPermission(){
-        long ts = System.currentTimeMillis();
-        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-        List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats(
-                UsageStatsManager.INTERVAL_BEST,ts-10000, ts);
-        if (queryUsageStats == null) {
-            return false;
-        }
-        return true;
-    }
 }

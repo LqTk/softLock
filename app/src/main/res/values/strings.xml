@@ -3,4 +3,5 @@
     <string name="app_main">软件</string>
     <string name="choose_soft">选择软件</string>
     <string name="lock_name">请输入密码</string>
+    <string name="set_name">设置密码</string>
 </resources>

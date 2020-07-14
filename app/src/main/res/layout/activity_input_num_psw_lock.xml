@@ -10,7 +10,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_30">
+        android:layout_height="@dimen/dp_40">
         <TextView
             style="@style/topText"
             tools:viewBindingIgnore="true"
@@ -26,29 +26,51 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
-        <TextView
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="请输入"/>
-        <TextView
-            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="请输入"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_soft_name"
+                android:textColor="@color/soft_name"
+                android:textSize="@dimen/sp_20"
+                android:textStyle="bold"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="的软件锁密码"/>
+        </LinearLayout>
+        <com.org.tk.softlock.gesture.GestureLockViewGroup
+            android:id="@+id/lock_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_soft_name"
-            android:textColor="@color/soft_name"
-            android:textSize="@dimen/sp_20"
-            android:textStyle="bold"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="软件锁密码"/>
+            android:gravity="center_vertical"
+            app:count="4"
+            app:tryTimes="5"/>
+        <!--app:color_no_finger_inner_circle="#ff085D58"
+        app:color_no_finger_outer_circle="#ff08F0E0"
+        app:color_finger_on="#FF1734BF"-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_forget_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="忘记密码"
+                android:padding="@dimen/dp_10"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/text_top_cancel"/>
+        </RelativeLayout>
     </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="解锁"
-        android:id="@+id/tv_unlock"/>
 </LinearLayout>
