@@ -58,10 +58,6 @@ public class InputNumPswLockActivity extends AppCompatActivity {
             public void onGestureEvent(boolean matched, int[] password) {
                 if (matched){
                     LockApplication.isStopLock = true;
-                    if (!TextUtils.isEmpty(packageName)) {
-                        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-                        startActivity(intent);
-                    }
                     InputNumPswLockActivity.this.finish();
                 }
             }
