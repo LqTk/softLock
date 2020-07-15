@@ -15,8 +15,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -167,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("Activity生命周期","destroy");
         EventBus.getDefault().unregister(this);
         //保活
         Intent intent = new Intent(context, TaskMonitorService.class);
@@ -183,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         refreshData(new CheckSoftChange());
         showWaring();
+        Log.d("Activity生命周期","resume");
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestPermission() {
@@ -215,4 +219,17 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("Activity生命周期","stop");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("Activity生命周期","pause");
+    }
+
 }
